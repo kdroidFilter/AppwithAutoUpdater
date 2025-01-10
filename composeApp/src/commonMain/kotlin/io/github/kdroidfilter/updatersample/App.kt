@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import io.github.kdroidfilter.platformtools.appmanager.AppInstaller
 import io.github.kdroidfilter.platformtools.appmanager.getAppInstaller
 import io.github.kdroidfilter.platformtools.appmanager.restartApplication
 import io.github.kdroidfilter.platformtools.getAppVersion
@@ -16,6 +17,7 @@ import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseF
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
 @Composable
@@ -68,6 +70,8 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
     var showDownloadProgressDialog by remember { mutableStateOf(false) }
     var showRestartDialog by remember { mutableStateOf(false) }
 
+    val installer = getAppInstaller()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -84,6 +88,11 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
 
         Button(
             onClick = {
+                runBlocking {
+                if(installer.canRequestInstallPackages()) {
+                    installer.requestInstallPackagesPermission()
+                }
+                    }
                 isChecking = true
                 CoroutineScope(Dispatchers.IO).launch {
                     fetcher.checkForUpdate { version, notes ->
@@ -212,10 +221,6 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
                             showDownloadProgressDialog = false
                             CoroutineScope(Dispatchers.IO).launch {
                                 isInstalling = true
-                                val installer = getAppInstaller()
-                                if (!installer.canRequestInstallPackages()) {
-                                    installer.requestInstallPackagesPermission()
-                                }
                                 downloadedFile?.let { file ->
                                     installer.installApp(file) { success, message ->
                                         installMessage = if (success) {
