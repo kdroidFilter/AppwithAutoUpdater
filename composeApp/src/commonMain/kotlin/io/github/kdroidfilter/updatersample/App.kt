@@ -1,7 +1,5 @@
 package io.github.kdroidfilter.updatersample
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -9,21 +7,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import appwithautoupdater.composeapp.generated.resources.Res
-import appwithautoupdater.composeapp.generated.resources.compose_multiplatform
 import io.github.kdroidfilter.platformtools.appmanager.getAppInstaller
 import io.github.kdroidfilter.platformtools.appmanager.restartApplication
 import io.github.kdroidfilter.platformtools.getAppVersion
+import io.github.kdroidfilter.platformtools.getPlatform
 import io.github.kdroidfilter.platformtools.releasefetcher.downloader.Downloader
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
-
 
 @Composable
 fun App() {
@@ -36,7 +29,7 @@ fun App() {
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-                UpdateCheckerUI(GitHubReleaseFetcher(owner = "kdroidfilter", repo = "KmpRealTimeLogger"))
+                UpdateCheckerUI(GitHubReleaseFetcher(owner = "kdroidfilter", repo = "AppwithAutoUpdater"))
 
                 Text(
                     "Platform: " + getPlatform().name.lowercase().replaceFirstChar { it.uppercase() },
@@ -98,12 +91,14 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
             onClick = {
                 isChecking = true
                 CoroutineScope(Dispatchers.IO).launch {
-                    fetcher.checkForUpdate { version, notes ->
+                    val result = fetcher.checkForUpdate { version, notes ->
                         isChecking = false
                         latestVersion = version
                         changelog = notes
-                        showUpdateAvailableDialog = true
+                        showUpdateAvailableDialog = version != null
+                        showNoUpdateDialog = version == null
                     }
+                    isChecking = false
                 }
             },
             enabled = !isChecking && !isInstalling && !isDownloading,
@@ -205,7 +200,7 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
                             Text("Downloading update, please wait.")
                             Spacer(modifier = Modifier.height(8.dp))
                             LinearProgressIndicator(
-                                progress = { (downloadProgress / 100).toFloat() },
+                                progress = (downloadProgress / 100).toFloat(),
                                 modifier = Modifier.fillMaxWidth(),
                             )
                             Spacer(modifier = Modifier.height(8.dp))
