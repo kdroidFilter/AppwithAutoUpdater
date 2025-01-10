@@ -58,8 +58,8 @@ android {
         applicationId = "io.github.kdroidfilter.updatersample"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = 1
+        versionName = "1.0"
     }
 
     signingConfigs {
@@ -107,7 +107,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "io.github.kdroidfilter.updatersample"
-            packageVersion = "2.0.0"
+            packageVersion = "1.0.0"
             windows {
                 dirChooser = true
                 perUserInstall = true
