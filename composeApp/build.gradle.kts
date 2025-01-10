@@ -9,8 +9,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
-val versionCode = 2
-val version = "2.0.0"
+val versionCode = 1
+val version = "1.0.0"
 
 kotlin {
     androidTarget {
