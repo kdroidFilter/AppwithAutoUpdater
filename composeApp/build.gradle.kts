@@ -9,13 +9,14 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
-
+val versionCode = 1
+val version = "1.0.0"
 
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
     
@@ -58,8 +59,8 @@ android {
         applicationId = "io.github.kdroidfilter.updatersample"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 2
-        versionName = "2.0"
+        versionCode = versionCode
+        versionName = version
     }
 
     signingConfigs {
@@ -84,8 +85,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     applicationVariants.all {
         outputs.all {
@@ -107,7 +108,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "io.github.kdroidfilter.updatersample"
-            packageVersion = "1.0.0"
+            packageVersion = version
             windows {
                 dirChooser = true
                 perUserInstall = true
