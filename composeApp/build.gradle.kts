@@ -112,7 +112,6 @@ compose.desktop {
             description = "App with AutoUpdater"
             copyright = ""
             vendor = "KDroidFilter"
-            licenseFile = rootProject.file("LICENSE")
             windows {
                 dirChooser = true
                 perUserInstall = true
