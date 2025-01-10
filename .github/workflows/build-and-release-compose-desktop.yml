@@ -1,4 +1,4 @@
-name: Build and Release Compose Desktop App with JetBrains JDK
+name: Build and Release Compose Desktop App with temurin JDK
 
 on:
   push:
