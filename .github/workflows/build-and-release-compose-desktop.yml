@@ -10,7 +10,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
       # 1. Check out the source code
@@ -44,12 +44,12 @@ jobs:
           name: linux-deb
           path: composeApp/build/compose/binaries/main/deb/*.deb
 
-#      - name: Upload macOS artifact
-#        if: matrix.os == 'macos-latest'
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: macos-dmg
-#          path: composeApp/build/compose/binaries/main/pkg/*.pkg
+      - name: Upload macOS artifact
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-dmg
+          path: composeApp/build/compose/binaries/main/pkg/*.pkg
 
       - name: Upload Windows artifact
         if: matrix.os == 'windows-latest'
@@ -75,10 +75,10 @@ jobs:
         with:
           name: linux-deb
 
-#      - name: Download macOS artifact
-#        uses: actions/download-artifact@v4
-#        with:
-#          name: macos-pkg
+      - name: Download macOS artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-pkg
 
       - name: Download Windows artifact
         uses: actions/download-artifact@v4

@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import io.github.kdroidfilter.platformtools.appmanager.getAppInstaller
-import io.github.kdroidfilter.platformtools.appmanager.restartApplication
 import io.github.kdroidfilter.platformtools.getAppVersion
 import io.github.kdroidfilter.platformtools.getOperatingSystem
 import io.github.kdroidfilter.platformtools.releasefetcher.downloader.Downloader
@@ -17,6 +16,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import kotlin.system.exitProcess
 
 @Composable
 fun App() {
@@ -32,7 +32,7 @@ fun App() {
                 UpdateCheckerUI(GitHubReleaseFetcher(owner = "kdroidfilter", repo = "AppwithAutoUpdater"))
 
                 Text(
-                    "O.S.: " + getOperatingSystem().name.lowercase().replaceFirstChar { it.uppercase() },
+                    "O.S. : " + getOperatingSystem().name.lowercase().replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
@@ -257,9 +257,10 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
                 },
                 confirmButton = {
                     Button(onClick = {
-                        restartApplication()
+                        exitProcess(0)
+                        //TODO The restartApplication() function not work after an update
                     }) {
-                        Text("Restart Now")
+                        Text("Quit Now")
                     }
                 },
                 dismissButton = {

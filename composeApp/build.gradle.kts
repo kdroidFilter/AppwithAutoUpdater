@@ -107,7 +107,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "io.github.kdroidfilter.updatersample"
-            packageVersion = "2.0.0"
+            packageVersion = "1.0.0"
             windows {
                 dirChooser = true
                 perUserInstall = true
