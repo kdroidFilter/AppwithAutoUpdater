@@ -24,9 +24,7 @@ jobs:
           distribution: 'jetbrains'
           java-version: '17'
           token: ${{ secrets.GITHUB_TOKEN }}
-          # Remove unnecessary configurations that might cause conflicts
-          java-package: 'jdk'
-          cache: 'gradle'  # Enable Gradle caching
+
 
       # 3. Configure Gradle
       - name: Set up Gradle
