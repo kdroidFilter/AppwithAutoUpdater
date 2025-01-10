@@ -38,7 +38,7 @@ jobs:
 
       # 5. Build the APK with the signing configuration
       - name: Build APK
-        run: ./gradlew :kmplog-client:assembleRelease
+        run: ./gradlew :composeApp:assembleRelease
 
       # 6. Identify the exact path of the generated APK
       - name: Find APK
