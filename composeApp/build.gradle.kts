@@ -109,11 +109,20 @@ compose.desktop {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "io.github.kdroidfilter.updatersample"
             packageVersion = version
+            description = "App with AutoUpdater"
+            copyright = ""
+            vendor = "KDroidFilter"
+            licenseFile = rootProject.file("LICENSE")
             windows {
                 dirChooser = true
                 perUserInstall = true
                 menuGroup = "start-menu-group"
             }
+            macOS {
+                bundleID = "io.github.kdroidfilter.updatersample"
+                dockName = "App with AutoUpdater"
+            }
+
         }
     }
 }
