@@ -21,6 +21,11 @@ This repository demonstrates how to use the **PlatformTools** library to impleme
 
 ---
 
+<div align="center">
+  <img src="/assets/AppWithAutoUpdater.gif" alt="Demo GIF">
+</div>
+
+
 ## 🛒 License
 
 This example application is licensed under the [MIT License](https://opensource.org/licenses/MIT).
