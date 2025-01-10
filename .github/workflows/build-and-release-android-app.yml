@@ -44,7 +44,7 @@ jobs:
       - name: Find APK
         id: find_apk
         run: |
-          apk_path=$(find kmplog-client/build/outputs/apk/release -name "*.apk" | head -n 1)
+          apk_path=$(find composeApp/build/outputs/apk/release -name "*.apk" | head -n 1)
           echo "APK_PATH=${apk_path}" >> $GITHUB_ENV
           echo "apk_path=${apk_path}" >> $GITHUB_OUTPUT
 
@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: release-apk
-          path: kmplog-client/build/outputs/apk/release/*.apk
+          path: composeApp/build/outputs/apk/release/*.apk
 
   release:
     runs-on: ubuntu-latest
