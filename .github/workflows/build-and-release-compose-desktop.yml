@@ -17,11 +17,11 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      # 2. Set up JetBrains JDK with proper authentication
-      - name: Set up JetBrains JDK
+      # 2. Set up temurin JDK with proper authentication
+      - name: Set up temurin JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'jetbrains'
+          distribution: 'temurin'
           java-version: '17'
           token: ${{ secrets.GITHUB_TOKEN }}
 
