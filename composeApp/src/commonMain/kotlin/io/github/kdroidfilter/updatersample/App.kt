@@ -15,6 +15,7 @@ import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseF
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -67,6 +68,7 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
     var showNoUpdateDialog by remember { mutableStateOf(false) }
     var showDownloadProgressDialog by remember { mutableStateOf(false) }
     var showRestartDialog by remember { mutableStateOf(false) }
+    val installer = getAppInstaller()
 
     Column(
         modifier = Modifier
@@ -85,6 +87,11 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
 
         Button(
             onClick = {
+                runBlocking {
+                    if (!installer.canRequestInstallPackages()) {
+                        installer.requestInstallPackagesPermission()
+                    }
+                }
                 isChecking = true
                 CoroutineScope(Dispatchers.IO).launch {
                     fetcher.checkForUpdate { version, notes ->
@@ -212,10 +219,6 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
                             showDownloadProgressDialog = false
                             CoroutineScope(Dispatchers.IO).launch {
                                 isInstalling = true
-                                val installer = getAppInstaller()
-                                if (!installer.canRequestInstallPackages()) {
-                                    installer.requestInstallPackagesPermission()
-                                }
                                 downloadedFile?.let { file ->
                                     installer.installApp(file) { success, message ->
                                         installMessage = if (success) {
