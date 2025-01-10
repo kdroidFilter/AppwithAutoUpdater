@@ -1,0 +1,86 @@
+name: Build and Release Android APK
+
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger workflow on tags starting with 'v'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+      ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+      ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+    steps:
+      # 1. Check out the source code
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      # 2. Set up the JDK
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # 3. Decode the keystore
+      - name: Decode keystore
+        run: |
+          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > keystore
+
+      # 4. Set the environment variable for the keystore path
+      - name: Set keystore path
+        run: echo "ANDROID_KEYSTORE_PATH=$(pwd)/keystore" >> $GITHUB_ENV
+
+      # 5. Build the APK with the signing configuration
+      - name: Build APK
+        run: ./gradlew :kmplog-client:assembleRelease
+
+      # 6. Identify the exact path of the generated APK
+      - name: Find APK
+        id: find_apk
+        run: |
+          apk_path=$(find kmplog-client/build/outputs/apk/release -name "*.apk" | head -n 1)
+          echo "APK_PATH=${apk_path}" >> $GITHUB_ENV
+          echo "apk_path=${apk_path}" >> $GITHUB_OUTPUT
+
+      # 7. Upload the APK as an artifact
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-apk
+          path: kmplog-client/build/outputs/apk/release/*.apk
+
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write  # Required to publish on GitHub Release
+
+    steps:
+      # 1. Check out the source code
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      # 2. Download the APK artifact
+      - name: Download APK artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: release-apk
+
+      # 3. Verify the downloaded artifacts (optional)
+      - name: Check downloaded artifacts
+        run: ls -R
+
+      # 4. Create the GitHub release while retaining the APK name
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            *.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
