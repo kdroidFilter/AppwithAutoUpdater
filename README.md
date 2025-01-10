@@ -1,4 +1,4 @@
-# Application Sample with Updater
+# Example Application with Updater
 
 This repository demonstrates how to use the **PlatformTools** library to implement self-updating functionality for desktop and Android apps. For more details about the library, visit [PlatformTools GitHub](https://github.com/kdroidFilter/Platform-Tools).
 
@@ -9,6 +9,8 @@ This repository demonstrates how to use the **PlatformTools** library to impleme
 - **Cross-Platform Updates**: Supports updates for Windows, Mac, Linux, and Android.
 - **GitHub Release Integration**: Fetches the latest release, compares versions, and downloads platform-specific files.
 - **Simple Update Process**: Automatically handles downloading and applying updates.
+- **Windows Silent Installation**: Updates are installed silently without requiring administrative rights.
+- **Mac Support Not Tested**: Functionality on macOS has not been verified.
 
 ---
 
