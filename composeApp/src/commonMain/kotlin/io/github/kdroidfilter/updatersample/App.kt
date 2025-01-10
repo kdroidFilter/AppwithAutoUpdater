@@ -66,6 +66,7 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
     var showUpdateAvailableDialog by remember { mutableStateOf(false) }
     var showNoUpdateDialog by remember { mutableStateOf(false) }
     var showDownloadProgressDialog by remember { mutableStateOf(false) }
+    var showRestartDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -73,12 +74,6 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button({
-            restartApplication()
-        }){
-            Text("Restart App")
-        }
-
         Text(
             text = "Application Update",
             style = MaterialTheme.typography.headlineMedium,
@@ -91,12 +86,12 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
             onClick = {
                 isChecking = true
                 CoroutineScope(Dispatchers.IO).launch {
-                    val result = fetcher.checkForUpdate { version, notes ->
+                    fetcher.checkForUpdate { version, notes ->
                         isChecking = false
                         latestVersion = version
                         changelog = notes
-                        showUpdateAvailableDialog = version != null
-                        showNoUpdateDialog = version == null
+                        showUpdateAvailableDialog = true
+                        showNoUpdateDialog = false
                     }
                     isChecking = false
                 }
@@ -143,6 +138,7 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
                                         if (progress >= 100.0) {
                                             downloadedFile = file
                                             isDownloading = false
+                                            showRestartDialog = true
                                         }
                                     }
                                 } else {
@@ -200,7 +196,7 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
                             Text("Downloading update, please wait.")
                             Spacer(modifier = Modifier.height(8.dp))
                             LinearProgressIndicator(
-                                progress = (downloadProgress / 100).toFloat(),
+                                progress = { (downloadProgress / 100).toFloat() },
                                 modifier = Modifier.fillMaxWidth(),
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -242,6 +238,37 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
                         showDownloadProgressDialog = false
                     }) {
                         Text("Cancel")
+                    }
+                }
+            )
+        }
+
+        if (showRestartDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    showRestartDialog = false
+                },
+                title = {
+                    Text("Restart Required")
+                },
+                text = {
+                    Text("The application needs to be restarted to apply the updates.")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showRestartDialog = false
+                            restartApplication()
+                        }
+                    ) {
+                        Text("Restart Now")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        showRestartDialog = false
+                    }) {
+                        Text("Later")
                     }
                 }
             )
