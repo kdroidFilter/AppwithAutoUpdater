@@ -16,8 +16,8 @@ This repository demonstrates how to use the **PlatformTools** library to impleme
 
 ## 🔧 How to Test
 
-1. Download version [1.0.0 from the releases](https://github.com/kdroidFilter/AppwithAutoUpdater/releases/tag/v1.0.0).
-2. Run the application and use the update feature to upgrade to version 2.0.0.
+1. Download version [1.0.1 from the releases](https://github.com/kdroidFilter/AppwithAutoUpdater/releases/tag/v1.0.1).
+2. Run the application and use the update feature to upgrade to version 2.0.1.
 
 ---
 
