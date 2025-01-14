@@ -9,8 +9,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
-val versionCode = 2
-val version = "2.0.0"
+val appVersionCode = 2
+val appVersion = "1.0.1"
 
 kotlin {
     androidTarget {
@@ -41,7 +41,7 @@ kotlin {
             implementation(libs.platformtools.core)
             implementation(libs.platformtools.appmanager)
             implementation(libs.platformtools.releasefetcher)
-
+            implementation(libs.platformtools.permissionhandler)
 
         }
         desktopMain.dependencies {
@@ -59,8 +59,8 @@ android {
         applicationId = "io.github.kdroidfilter.updatersample"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = versionCode
-        versionName = version
+        versionCode = appVersionCode
+        versionName = appVersion
     }
 
     signingConfigs {
@@ -108,7 +108,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Pkg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "io.github.kdroidfilter.updatersample"
-            packageVersion = version
+            packageVersion = appVersion
             description = "App with AutoUpdater"
             copyright = ""
             vendor = "KDroidFilter"

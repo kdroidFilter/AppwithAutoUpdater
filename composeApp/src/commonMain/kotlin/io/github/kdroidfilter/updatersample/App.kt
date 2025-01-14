@@ -10,6 +10,10 @@ import androidx.compose.ui.unit.dp
 import io.github.kdroidfilter.platformtools.appmanager.getAppInstaller
 import io.github.kdroidfilter.platformtools.getAppVersion
 import io.github.kdroidfilter.platformtools.getOperatingSystem
+import io.github.kdroidfilter.platformtools.permissionhandler.hasInstallPermission
+import io.github.kdroidfilter.platformtools.permissionhandler.hasNotificationPermission
+import io.github.kdroidfilter.platformtools.permissionhandler.requestInstallPermission
+import io.github.kdroidfilter.platformtools.permissionhandler.requestNotificationPermission
 import io.github.kdroidfilter.platformtools.releasefetcher.downloader.Downloader
 import io.github.kdroidfilter.platformtools.releasefetcher.github.GitHubReleaseFetcher
 import kotlinx.coroutines.CoroutineScope
@@ -68,7 +72,22 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
     var showNoUpdateDialog by remember { mutableStateOf(false) }
     var showDownloadProgressDialog by remember { mutableStateOf(false) }
     var showRestartDialog by remember { mutableStateOf(false) }
+    var showPermissionDialog by remember { mutableStateOf(false) }
     val installer = getAppInstaller()
+
+    fun checkForUpdates(fetcher: GitHubReleaseFetcher) {
+        isChecking = true
+        CoroutineScope(Dispatchers.IO).launch {
+            fetcher.checkForUpdate { version, notes ->
+                isChecking = false
+                latestVersion = version
+                changelog = notes
+                showUpdateAvailableDialog = true
+                showNoUpdateDialog = false
+            }
+            isChecking = false
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -87,21 +106,11 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
 
         Button(
             onClick = {
-                runBlocking {
-                    if (!installer.canRequestInstallPackages()) {
-                        installer.requestInstallPackagesPermission()
-                    }
-                }
-                isChecking = true
-                CoroutineScope(Dispatchers.IO).launch {
-                    fetcher.checkForUpdate { version, notes ->
-                        isChecking = false
-                        latestVersion = version
-                        changelog = notes
-                        showUpdateAvailableDialog = true
-                        showNoUpdateDialog = false
-                    }
-                    isChecking = false
+
+                if (!hasInstallPermission()) {
+                    showPermissionDialog = true
+                } else {
+                    checkForUpdates(fetcher)
                 }
             },
             enabled = !isChecking && !isInstalling && !isDownloading,
@@ -117,6 +126,44 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
             } else {
                 Text("Check for updates", style = MaterialTheme.typography.bodyMedium)
             }
+        }
+
+        if (showPermissionDialog) {
+            AlertDialog(
+                onDismissRequest = {
+                    showPermissionDialog = false
+                },
+                title = {
+                    Text("Permission Required")
+                },
+                text = {
+                    Text("This action requires install permissions. Please grant the necessary permissions to proceed.")
+                },
+                confirmButton = {
+                    Button(
+                        onClick = {
+                            showPermissionDialog = false
+                            requestInstallPermission(
+                                onGranted = {
+                                    checkForUpdates(fetcher)
+                                },
+                                onDenied = {
+                                    installMessage = "Permission denied. Unable to check for updates."
+                                }
+                            )
+                        }
+                    ) {
+                        Text("Grant Permission")
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = {
+                        showPermissionDialog = false
+                    }) {
+                        Text("Cancel")
+                    }
+                }
+            )
         }
 
         if (showUpdateAvailableDialog && latestVersion != null) {
@@ -203,7 +250,7 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
                             Text("Downloading update, please wait.")
                             Spacer(modifier = Modifier.height(8.dp))
                             LinearProgressIndicator(
-                                progress = { (downloadProgress / 100).toFloat() },
+                                progress = (downloadProgress / 100).toFloat(),
                                 modifier = Modifier.fillMaxWidth(),
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -287,3 +334,7 @@ fun UpdateCheckerUI(fetcher: GitHubReleaseFetcher) {
         }
     }
 }
+
+
+
+
